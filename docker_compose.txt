@@ -1,0 +1,81 @@
+1. Write a docker-compose.yml that launches a Flask app and Redis.
+2. Bring the stack up and show logs.
+3. Scale the Flask service to two replicas.
+4. Stop and remove the stack along with networks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Your Flask app directory must include:
+Dockerfile
+
+
+app.py
+docker-compose.yml :
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+
+  redis:
+    image: redis:alpine
+
+app.py
+from flask import Flask
+import redis, os
+
+app = Flask(__name__)
+r = redis.Redis(host=os.getenv("REDIS_HOST", "redis"), port=6379)
+
+@app.route("/")
+def home():
+    r.incr("counter")
+    return f"Visits: {r.get('counter').decode()}"
+
+Dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY . .
+RUN pip install flask redis
+CMD ["python", "app.py"]
+
+docker-compose up -d
+
+docker-compose logs -f
+
+docker-compose up -d --scale web=2
+
+docker-compose down
+
+docker-compose down -v
+
+
+
+
+

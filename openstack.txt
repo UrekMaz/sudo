@@ -1,0 +1,86 @@
+PHASE 1
+
+# 1. Update your package list to ensure you get the latest versions
+sudo apt update
+
+# 2. Upgrade installed packages to their latest versions
+sudo apt upgrade -y
+
+# 3. Create a specific user named 'stack' (OpenStack should not be run as root)
+sudo adduser stack
+
+# 4. Grant the 'stack' user sudo privileges without requiring a password
+echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
+
+# 5. Switch to the 'stack' user context (Run all subsequent commands as this user)
+su - stack
+
+# 6. Install Git (required to download the OpenStack software)
+sudo apt install git -y
+
+# 7. Clone the DevStack repository (Download the OpenStack source code)
+git clone https://opendev.org/openstack/devstack
+
+# 8. Enter the devstack directory
+cd devstack
+
+# 9. Create the configuration file 'local.conf' with default passwords
+# (This creates a file that sets all passwords to 'secret' so installation doesn't pause)
+cat <<EOF > local.conf
+[[local|localrc]]
+ADMIN_PASSWORD=secret
+DATABASE_PASSWORD=\$ADMIN_PASSWORD
+RABBIT_PASSWORD=\$ADMIN_PASSWORD
+SERVICE_PASSWORD=\$ADMIN_PASSWORD
+EOF
+
+# 10. Run the installation script (This takes 20-40 minutes)
+./stack.sh
+
+
+
+PHASE 2
+
+# 1. Load the admin credentials into your environment variables
+# (This tells the terminal you are the 'admin' user)
+source openrc admin admin
+
+# 2. Create a key pair named 'mykey' and save the private key to a file
+openstack keypair create mykey > mykey.pem
+
+# 3. Change permissions of the key file so only the owner can read it
+# (SSH will reject the key if permissions are too open)
+chmod 600 mykey.pem
+
+# 4. Create a new security group (firewall) named 'my-sec-group'
+openstack security group create my-sec-group
+
+# 5. Add a rule to allow TCP traffic on Port 22 (SSH) to the security group
+openstack security group rule create --proto tcp --dst-port 22 my-sec-group
+
+# 6. Add a rule to allow ICMP traffic (Ping) to the security group
+openstack security group rule create --proto icmp my-sec-group
+
+# 7. Launch the Virtual Machine (Instance)
+# --flavor: hardware size (RAM/CPU)
+# --image: the OS to use (ensure exact name matches 'openstack image list')
+# --nic: connects to the internal private network
+# --security-group: attaches the firewall we made
+# --key-name: attaches the key we made
+openstack server create --flavor m1.nano --image cirros-0.6.2-x86_64-disk --nic net-id=private --security-group my-sec-group --key-name mykey my-instance
+
+# 8. Create a Floating IP (Public IP) from the public network pool
+openstack floating ip create public
+
+# 9. Associate the Floating IP with your instance
+# (Replace 172.24.4.225 with the actual IP generated in the previous step)
+openstack server add floating ip my-instance 172.24.4.225
+
+
+VERIFICATION
+
+# List all servers to see status (Should be ACTIVE) and IP addresses
+openstack server list
+
+# Test connectivity to your instance (using the Floating IP)
+ping -c 4 172.24.4.225
