@@ -1,0 +1,35 @@
+
+1. Pull an Nginx image and run a container on port 8080.
+docker pull nginx
+docker run -d -p 8080:80 --name my-nginx nginx
+
+
+2. Create a Dockerfile that prints “Hello from Docker,” then build and run it.
+FROM alpine
+CMD echo "Hello from Docker"
+
+docker build -t hello-img .
+
+docker run hello-img
+
+
+3. Show all running containers and remove a stopped container.
+docker ps
+
+docker ps -a
+
+docker rm <container_id>
+
+
+4. Use a bind mount to share a host folder with a container and verify file visibility.
+mkdir shared-folder
+echo "Hello from host" > shared-folder/host.txt
+
+docker run -it --name mount-test -v "$(pwd)/shared-folder:/data" alpine sh
+
+cd /data
+ls
+cat host.txt
+
+
+
