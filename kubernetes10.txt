@@ -1,4 +1,6 @@
-﻿1. Create a ConfigMap and mount it in a pod.
+﻿Lab 10: Kubernetes Advanced Objects
+
+1. Create a ConfigMap and mount it in a pod.
  2. Create a Secret and pass it as an environment variable. 
 3. Configure an Ingress and access the service using Minikube’s ingress add-on. 
 4. Create a Horizontal Pod Autoscaler for an existing deployment

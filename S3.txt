@@ -1,91 +1,147 @@
-﻿Lab 5: AWS EC2 and Security Groups 
-1. Launch a t2.micro instance. 
-2. Create or update a security group to allow SSH. 
-3. Install a simple web server on the instance. 
-4. Allow HTTP inbound traffic and confirm accessibility.
- Launch a t2.micro EC2 Instance
-Step 1: Login to AWS
-1. Go to: https://console.aws.amazon.com
-
-2. Search for EC2
-
-3. Open EC2 Dashboard
-
-________________
-
-
-Step 2: Launch the Instance
-   1. Click Instances → Launch Instances
-
-   2. Fill details:
-
-Field
-	Value
-	Name
-	Lab5-EC2
-	AMI
-	Amazon Linux 2 AMI
-	Instance Type
-	t2.micro
-	Key Pair
-	Create new / Use existing (.pem will download to your PC)
-	________________
-
-
-Step 3: Create Security Group (SSH only for now)
-Select Create new Security Group
+﻿Lab 6: AWS S3 
+1. Create a new S3 bucket. 
+2. Upload a sample file. 
+3. Enable versioning.
+ 4. Make one object public and show its URL.
 
 
 
 
 
 
-Add rule:
-Type
-	Port
-	Source
-	SSH
-	22
-	0.0.0.0/0
-	Click Launch Instance
-
-
-IF IN WINDOWS COPY IT TO UBUNTU
-cp /mnt/c/Users/dcmau/Downloads/LAB.pem ~/LAB.pem
-chmod 400 ~/LAB.pem
-ssh -i "~/LAB.pem" ec2-user@<PUBLIC-IP>
-
-
-Install Web Server on EC2
-Once logged in, run:
-sudo yum update -y
-sudo yum install httpd -y
-sudo systemctl start httpd
-sudo systemctl enable httpd
-
-
-Create the webpage (use single quotes!)
-echo '<h1>Welcome to AWS Lab 5 - EC2 Web Server!</h1>' | sudo tee /var/www/html/in
 
 
 
 
-Allow HTTP (Port 80) in Security Group
-      1. Go to EC2 Dashboard → Instances
 
-      2. Select your instance
 
-      3. Click Security tab
 
-      4. Click your Security Group ID
 
-      5. Click Edit inbound rules
 
-      6. Add:
 
-Type
-	Port
-	Source
-	HTTP
-	80
-	0.0.0.0/0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Step 1: Create a New S3 Bucket
+
+Login to AWS Console
+
+Search for S3 → open S3 Dashboard
+
+Click Create bucket
+
+Fill details:
+
+Bucket name: your-unique-name (e.g., maureen-lab-bucket-123)
+
+AWS Region: (Select your region – usually ap-south-1 (Mumbai))
+
+Keep all settings default
+(Block all public access -> keep it ON for now)
+
+Scroll down → Click Create bucket
+
+
+Step 2: Upload a Sample File
+
+Click on your bucket name
+
+Click Upload
+
+Click Add files
+
+Select any file from your PC (e.g., sample.txt)
+
+Scroll down → click Upload
+
+
+
+Step 3: Enable Versioning
+
+In your bucket → click Properties tab
+
+Scroll to Bucket Versioning
+
+Click Edit
+
+Select Enable
+
+Click Save changes
+
+
+
+
+🔹 Step 4: Make One Object Public & Show URL
+
+Go to the Objects tab
+
+Click on the file you uploaded
+
+Step 1: Open your S3 bucket
+
+Go to
+S3 → your bucket → Permissions tab
+
+Step 2: Turn OFF Block Public Access
+
+Scroll to Block public access (bucket settings)
+
+Click Edit
+
+Uncheck (turn OFF) the top option:
+✔ Block all public access
+
+AWS will show a warning → type confirm in the box
+
+Click Save changes
+
+AWS recently introduced Bucket owner enforced ACL mode.
+
+Fix: Enable ACLs
+
+Go to your bucket → Permissions tab
+
+Scroll to Object Ownership
+
+Click Edit
+
+If it says:
+
+❌ Object Ownership: Bucket owner enforced (ACLs disabled)
+
+Then change it to:
+
+✔ ACLs enabled → Object writer
+
+Save changes
+
+Now go back to Objects → Actions
+
+“Make public using ACL” will be enabled
+
+
+
+
+After making it public, scroll down to Object URL
+
+You will see something like:
+
+https://<your-bucket>.s3.amazonaws.com/sample.txt
+
+
+Copy this URL
+
+Paste it in your browser → the file should open
+(For images it will display, for text it will download or preview)
