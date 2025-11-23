@@ -1,0 +1,103 @@
+aws vpc using console
+
+1)Using AWS Console
+
+Go to: VPC Dashboard → Your VPCs → Create VPC
+
+Choose VPC only
+
+Enter:
+
+Name: MyVPC
+
+IPv4 CIDR: 10.0.0.0/16
+
+Click Create VPC
+
+2)Part 2 — Create Subnets
+Public Subnet → 10.0.1.0/24
+Console
+
+VPC Dashboard → Subnets → Create subnet
+
+VPC: MyVPC
+
+Subnet name: PublicSubnet
+
+CIDR: 10.0.1.0/24
+
+Enable auto-assign public IP:
+
+Select subnet → Actions → Edit subnet settings
+
+Enable Auto-assign public IPv4
+
+Private Subnet → 10.0.2.0/24
+Console
+
+Repeat same steps:
+
+Name: PrivateSubnet
+CIDR: 10.0.2.0/24
+
+3)Part 3 — Create and Attach Internet Gateway (IGW)
+Console
+
+VPC Dashboard → Internet Gateways → Create IGW
+
+Name: MyIGW
+
+Actions → Attach to VPC
+
+4)Part 4 — Create Public Route Table
+Console
+
+VPC Dashboard → Route tables → Create route table
+
+Name: PublicRT
+
+VPC: MyVPC
+
+Select table → Edit routes
+
+Add:
+
+Destination: 0.0.0.0/0
+
+Target: Internet Gateway (MyIGW)
+
+Associate PublicSubnet with this route table.
+
+5)art 5 — Launch EC2 Instances
+Frontend Instance → Public Subnet
+Console
+
+EC2 → Launch Instance
+
+AMI: Ubuntu
+
+Type: t2.micro
+
+Network: MyVPC
+
+Subnet: PublicSubnet
+
+Enable auto public IP
+
+Security group: FrontendSG
+
+Create keypair
+
+6)Part 6 — Security Groups
+FrontendSG
+Allow:
+
+SSH (22) → My IP
+
+HTTP (80) → 0.0.0.0/0
+
+
+BackendSG
+Allow:
+
+DB Port (e.g., MySQL 3306) FROM FrontendSG ONLY
