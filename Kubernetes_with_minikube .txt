@@ -1,0 +1,190 @@
+﻿Lab 4: Kubernetes with Minikube
+1. Start Minikube and show cluster status.
+2. Deploy an Nginx Deployment with two replicas.
+3. Expose it as a NodePort service.
+4. Scale it to three replicas and show the pods.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+START MINIKUBE AND SHOW CLUSTER STATUS
+
+
+minikube start
+kubectl cluster-info
+kubectl get nodes
+
+
+
+
+
+
+ Deploy an Nginx Deployment with two replicas
+—----------------------------------------------------------------------------------------------
+
+
+kubectl create deployment nginx-deploy --image=nginx --replicas=2
+
+
+
+
+OR
+
+
+
+
+Create file
+
+
+
+
+nano nginx-deployment.yaml
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
+
+
+—-----------------------------------------------------
+kubectl apply -f nginx-deployment.yaml
+
+
+kubectl get deployments
+kubectl get pods
+
+
+Expose it as a NodePort service
+
+
+
+
+Expose it as a NodePort service
+
+
+
+
+kubectl expose deployment nginx-deploy --type=NodePort --port=80
+
+
+kubectl get svc
+
+
+minikube service nginx-deploy --url
+
+
+
+
+
+
+ Scale it to three replicas and show pods
+
+
+
+
+kubectl scale deployment nginx-deploy --replicas=3
+
+
+kubectl get pods -o wide
