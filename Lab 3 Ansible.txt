@@ -1,0 +1,72 @@
+Lab 3: Ansible
+1. Create an inventory file with two hosts (use localhost if needed).
+2. Write a playbook that installs Apache or Nginx.
+3. Run the playbook and capture the result.
+4. Use an ad-hoc command to show disk usage on the host.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nano inventory
+
+Content of inventory:
+[webservers]
+localhost
+127.0.0.1
+
+nano install_web.yml
+
+Content of install_web.yml
+
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+
+ansible-playbook -i inventory install_web.yml
+
+ansible all -i inventory -m command -a "df -h"
+
+
+
+
